@@ -1,0 +1,10 @@
+[package]
+name = "hn"
+version = "0.1.0"
+authors = ["Michael Simpson <michael@snthesis.com>"]
+edition = "2018"
+
+[dependencies]
+reqwest = "0.9.10"
+scraper = "0.9.1"
+colored = "1.7.0"

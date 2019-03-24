@@ -3,41 +3,40 @@ extern crate reqwest;
 extern crate scraper;
 
 use colored::*;
+use reqwest::Error;
 use scraper::{ElementRef, Html, Selector};
+use std::result::Result;
 
 fn main() {
-  let parsed_body = Html::parse_document(&get_body());
-
-  for element in parsed_body.select(&selector()) {
-    parse_story(element)
+  match get_body() {
+    Ok(body) => {
+      for element in Html::parse_document(&body).select(&selector()) {
+        parse_story(element);
+        parse_link(element);
+      }
+    }
+    Err(_) => eprintln!("Error fetching Hacker News data."),
   }
 }
 
-fn get_body() -> String {
-  reqwest::get("https://news.ycombinator.com/")
-    .expect("Can't reach Hacker News")
-    .text()
-    .unwrap()
+fn get_body() -> Result<String, Error> {
+  reqwest::get("https://news.ycombinator.com/")?.text()
 }
 
 fn selector() -> Selector {
   Selector::parse("a.storylink").unwrap()
 }
 
-fn parse_link(element: ElementRef) -> String {
-  let mut link = String::from(element.value().attr("href").unwrap());
-  if link.starts_with("item?") {
-    link = format!("https://news.ycombinator.com/{}", link);
+fn parse_link(element: ElementRef) {
+  if let Some(link) = element.value().attr("href") {
+    let mut link = link.to_owned();
+    if link.starts_with("item?") {
+      link = format!("https://news.ycombinator.com/{}", link);
+    }
+    println!("\t{}", link);
   }
-  link
 }
 
 fn parse_story(element: ElementRef) {
-  let title_element = element.first_child().unwrap().value();
-  if let scraper::Node::Text(title_text) = title_element {
-    let link = parse_link(element);
-    let title = String::from(&title_text.text);
-    println!("{}", title.cyan());
-    println!("\t{}", link);
-  }
+  println!("{}", element.inner_html().cyan());
 }

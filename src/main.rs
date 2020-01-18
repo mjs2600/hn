@@ -1,12 +1,10 @@
-use async_std::task;
 use colored::*;
 use reqwest::Error;
 use scraper::{ElementRef, Html, Selector};
 use std::result::Result;
 
-#[tokio::main]
-async fn main() {
-    match task::block_on(get_body()) {
+fn main() {
+    match get_body() {
         Ok(body) => {
             for element in Html::parse_document(&body).select(&selector()) {
                 parse_story(element);
@@ -17,11 +15,9 @@ async fn main() {
     }
 }
 
-async fn get_body() -> Result<String, Error> {
-    reqwest::get("https://news.ycombinator.com/")
-        .await?
+fn get_body() -> Result<String, Error> {
+    reqwest::blocking::get("https://news.ycombinator.com/")?
         .text()
-        .await
 }
 
 fn selector() -> Selector {

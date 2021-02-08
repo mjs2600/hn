@@ -1,3 +1,4 @@
+use colored::*;
 use reqwest::Error;
 use scraper::{ElementRef, Html, Selector};
 use std::fmt;
@@ -11,7 +12,7 @@ pub struct Site {
 
 impl fmt::Display for Site {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "{}", self.name)?;
+        writeln!(f, "{}", self.name.blue().bold())?;
         for story in &self.stories {
             writeln!(f, "{}", story)?;
         }
@@ -28,7 +29,7 @@ struct Story {
 impl fmt::Display for Story {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match &self.link {
-            Some(link) => write!(f, "\t{}\n\t\t({})", self.title, link),
+            Some(link) => write!(f, "\t{}\n\t\t({})", self.title.green(), link),
             None => write!(f, "\t{}", self.title),
         }
     }

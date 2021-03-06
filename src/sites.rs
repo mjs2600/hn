@@ -69,6 +69,23 @@ pub fn datatau() -> Result<Site, Error> {
     Ok(site)
 }
 
+pub fn lobsters() -> Result<Site, Error> {
+    let s = Selector::parse("a.u-url").unwrap();
+    let body = get_html("https://lobste.rs/")?;
+    let stories = body
+        .select(&s)
+        .map(|element| Story {
+            title: parse_title(element),
+            link: parse_link(element),
+        })
+        .collect();
+    let site = Site {
+        name: "Lobste.rs".to_string(),
+        stories,
+    };
+
+    Ok(site)
+}
 fn get_html(uri: &str) -> Result<Html, Error> {
     Ok(Html::parse_document(&reqwest::blocking::get(uri)?.text()?))
 }

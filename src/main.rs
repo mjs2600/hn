@@ -10,5 +10,9 @@ fn main() {
         Ok(site) => println!("{}", site),
         Err(_) => eprintln!("Error fetching DataTau data."),
     }
-}
 
+    match sites::lobsters() {
+        Ok(site) => println!("{}", site),
+        Err(_) => eprintln!("Error fetching DataTau data."),
+    }
+}
